@@ -18,7 +18,7 @@ function ProjectsPage() {
       description:
         'Built encoder-decoder model with BLIP, Kosmos, and fusion techniques. Flask backend with HTML frontend.',
       icon: Brain,
-      image: '/public/images/deeplearning-preview.jpg' // Add the robot image
+      image: '/images/deeplearning-preview.jpg' // Add the robot image
     },
     {
       title: 'LATE-ATT Attendance Tracker',
@@ -26,7 +26,7 @@ function ProjectsPage() {
       description:
         'Automated latecomer logging and WhatsApp-based reporting using JavaScript. Reduced manual tracking efforts.',
       icon: Clock,
-      image: '/public/images/lateatt-preview.jpg' // Add the attendance tracker UI image
+      image: '/images/lateatt-preview.jpg' // Add the attendance tracker UI image
     },
     {
       title: 'Weather App',
@@ -34,7 +34,7 @@ function ProjectsPage() {
       description:
         'Responsive weather application using React.js, Capacitor, and OpenWeather API. Deployed on web and Android.',
       icon: Cloud,
-      image: '/public/images/Weather.jpg' // Add the weather app screenshot
+      image: '/images/Weather.jpg' // Add the weather app screenshot
     },
     {
       title: 'College Feedback System',
@@ -42,7 +42,7 @@ function ProjectsPage() {
       description:
         'Secure feedback platform with authentication and analytics. MERN stack application appreciated by faculty.',
       icon: MessageSquare,
-      image: '/public/images/feedback-preview.jpg' // Add the feedback form image
+      image: '/images/feedback-preview.jpg' // Add the feedback form image
     },
     {
       title: 'Excel Processor',
@@ -50,7 +50,7 @@ function ProjectsPage() {
       description:
         'Web-based Excel file processor for data manipulation and analysis. Built with modern web technologies.',
       icon: FileSpreadsheet,
-      image: '/public/images/excel-preview.jpg' // Add the Excel processor UI image
+      image: '/images/excel-preview.jpg' // Add the Excel processor UI image
     },
     {
       title: 'Chat App',
@@ -58,7 +58,7 @@ function ProjectsPage() {
       description:
         'Real-time chat application built with React.js+Socket.io+Superbase. Features instant messaging with live updates.',
       icon: MessageCircle,
-      image: '/public/images/chat.png'
+      image: '/images/chat.png'
     },
   ];
 
