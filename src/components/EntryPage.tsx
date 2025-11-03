@@ -44,8 +44,20 @@ function EntryPage({ onEnter }: EntryPageProps) {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, [mouseX, mouseY]);
 
+  // Disable scrolling when component mounts
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
+    
+    // Re-enable scrolling when component unmounts
+    return () => {
+      document.body.style.overflow = 'unset';
+      document.documentElement.style.overflow = 'unset';
+    };
+  }, []);
+
   return (
-    <div className="fixed inset-0 bg-black overflow-hidden">
+    <div className="fixed inset-0 bg-black overflow-hidden select-none" style={{ touchAction: 'none' }}>
       {/* Background Animation - Base layer */}
       <div className="fixed inset-0 gradientBlinds" style={{ zIndex: 0 }}>
         <GradientBlinds
@@ -74,9 +86,9 @@ function EntryPage({ onEnter }: EntryPageProps) {
         }} 
       />
 
-      {/* Content Container - Top layer */}
+      {/* Content Container - Updated with select-none */}
       <div 
-        className="fixed inset-0 flex flex-col items-center justify-center px-4 gap-6" 
+        className="fixed inset-0 flex flex-col items-center justify-center px-4 gap-6 select-none" 
         style={{ zIndex: 2 }}
         onClick={onEnter}
       >
