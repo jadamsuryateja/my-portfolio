@@ -1,15 +1,23 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense, lazy } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import Navigation from './components/Navigation';
 
-
 import HomePage from './components/HomePage';
-import ResumePage from './components/ResumePage';
-import ProjectsPage from './components/ProjectsPage';
-import ServicesPage from './components/ServicesPage';
-import ContactPage from './components/ContactPage';
 import CustomCursor from './components/CustomCursor';
 import LoadingScreen from './components/LoadingScreen';
+
+// Lazy load heavy components
+const ResumePage = lazy(() => import('./components/ResumePage'));
+const ProjectsPage = lazy(() => import('./components/ProjectsPage'));
+const ServicesPage = lazy(() => import('./components/ServicesPage'));
+const ContactPage = lazy(() => import('./components/ContactPage'));
+
+// Simple loading fallback for route transitions
+const PageLoader = () => (
+  <div className="min-h-screen flex items-center justify-center">
+    <div className="w-8 h-8 border-4 border-orange-500 border-t-transparent rounded-full animate-spin" />
+  </div>
+);
 
 function App() {
   const [loading, setLoading] = useState(() => {
@@ -74,7 +82,9 @@ function App() {
           <CustomCursor />
           <>
             <Navigation currentPage={currentPage} onNavigate={handleNavigate} />
-            {renderPage()}
+            <Suspense fallback={<PageLoader />}>
+              {renderPage()}
+            </Suspense>
           </>
         </div>
       )}

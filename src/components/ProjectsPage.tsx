@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { Project } from '../types';
+import LazyImage from './LazyImage';
 
 function ProjectsPage() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -293,12 +294,16 @@ const ProjectCard = ({ project, onClick }: { project: any, onClick: () => void }
         className="absolute inset-0 rounded-2xl overflow-hidden shadow-2xl bg-black"
       >
         {project.image ? (
-          <motion.img
-            src={project.image}
-            alt={project.title}
-            style={{ x: imageX, y: imageY, scale: 1.15 }} // Scaled up to avoid edges showing
-            className="w-full h-full object-cover"
-          />
+          <motion.div
+            style={{ x: imageX, y: imageY, scale: 1.15 }}
+            className="w-full h-full"
+          >
+            <LazyImage
+              src={project.image}
+              alt={project.title}
+              className="w-full h-full object-cover"
+            />
+          </motion.div>
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-zinc-800">
             <project.icon size={64} className="text-white/20" />
