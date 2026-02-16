@@ -32,7 +32,7 @@ function ProjectsPage() {
     {
       id: 'late-att',
       title: 'LATE-ATT Attendance Tracker',
-      url: 'https://jadamsuryateja.github.io/LATE-ATT/index.html',
+      url: 'https://late-att.vercel.app/',
       description:
         'Latecomers registry with Barcode/QR scanning. Features real-time logging, camera selection, and Excel export for attendance tracking.',
       icon: Scan,
