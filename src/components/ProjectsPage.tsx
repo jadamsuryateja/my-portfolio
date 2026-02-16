@@ -8,7 +8,8 @@ import {
   Brain,
   Cloud,
   FileSpreadsheet,
-  MessageCircle
+  MessageCircle,
+  Scan
 } from 'lucide-react';
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { Project } from '../types';
@@ -33,10 +34,10 @@ function ProjectsPage() {
       title: 'LATE-ATT Attendance Tracker',
       url: 'https://jadamsuryateja.github.io/LATE-ATT/index.html',
       description:
-        'Automated latecomer logging and WhatsApp-based reporting using JavaScript. Reduced manual tracking efforts.',
-      icon: Clock,
+        'Latecomers registry with Barcode/QR scanning. Features real-time logging, camera selection, and Excel export for attendance tracking.',
+      icon: Scan,
       image: '/images/lateatt-preview.webp',
-      tags: ['JavaScript', 'Face Rec', 'Geofencing']
+      tags: ['JavaScript', 'Barcode Scanner', 'Excel Export']
     },
     {
       id: 'feedback-sys',
