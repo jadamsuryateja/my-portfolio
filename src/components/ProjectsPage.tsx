@@ -31,11 +31,11 @@ function ProjectsPage() {
     {
       id: 'late-att',
       title: 'LATE-ATT Attendance Tracker',
-      url: 'https://student-att.vercel.app/',
+      url: 'https://jadamsuryateja.github.io/LATE-ATT/index.html',
       description:
         'Automated latecomer logging and WhatsApp-based reporting using JavaScript. Reduced manual tracking efforts.',
       icon: Clock,
-      image: '/images/hostel-preview.webp',
+      image: '/images/lateatt-preview.webp',
       tags: ['JavaScript', 'Face Rec', 'Geofencing']
     },
     {
@@ -51,11 +51,11 @@ function ProjectsPage() {
     {
       id: 'hostel-portal',
       title: 'Hostel Attendance Portal',
-      url: 'https://jadamsuryateja.github.io/LATE-ATT/index.html',
+      url: 'https://student-att.vercel.app/',
       description:
         'Smart attendance tracking with face recognition integration and geofencing. Features role-based dashboards for admins and staff.',
       icon: Clock,
-      image: '/images/lateatt-preview.webp',
+      image: '/images/hostel-preview.webp',
       tags: ['JavaScript', 'Face Rec', 'Geofencing']
     },
     {
