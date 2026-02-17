@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { motion, useScroll, useTransform, useMotionValue } from 'framer-motion';
+import { motion, useScroll, useTransform, useMotionValue, useSpring } from 'framer-motion';
 import { Code2, Cpu, Globe, Layers, Server } from 'lucide-react';
 
 const ArchitectSection = () => {
@@ -17,6 +17,11 @@ const ArchitectSection = () => {
     const mouseX = useMotionValue(0);
     const mouseY = useMotionValue(0);
 
+    // Smooth out the mouse values
+    const springConfig = { damping: 20, stiffness: 100 };
+    const springX = useSpring(mouseX, springConfig);
+    const springY = useSpring(mouseY, springConfig);
+
     const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
         const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
         const x = (e.clientX - left) / width - 0.5;
@@ -30,16 +35,19 @@ const ArchitectSection = () => {
         mouseY.set(0);
     };
 
-    const rotateX = useTransform(mouseY, [-0.5, 0.5], [7, -7]);
-    const rotateY = useTransform(mouseX, [-0.5, 0.5], [-7, 7]);
-    // const bgX = useTransform(mouseX, [-0.5, 0.5], ["-5%", "5%"]);
-    // const bgY = useTransform(mouseY, [-0.5, 0.5], ["-5%", "5%"]);
+
+
+    // Parallax effects for inner content
+    const headerX = useTransform(springX, [-0.5, 0.5], [-25, 25]);
+    const headerY = useTransform(springY, [-0.5, 0.5], [-25, 25]);
+
+    const contentX = useTransform(springX, [-0.5, 0.5], [-10, 10]);
+    const contentY = useTransform(springY, [-0.5, 0.5], [-10, 10]);
 
     return (
         <section
             ref={targetRef}
-            className="min-h-screen py-20 flex items-center justify-center relative overflow-hidden perspective-1000"
-            style={{ perspective: "1000px" }}
+            className="min-h-screen py-20 flex items-center justify-center relative overflow-hidden"
         >
             {/* Animated Grid Background */}
             <div className="absolute inset-0 bg-black z-0">
@@ -65,9 +73,6 @@ const ArchitectSection = () => {
                 style={{
                     opacity,
                     scale,
-                    rotateX,
-                    rotateY,
-                    transformStyle: "preserve-3d"
                 }}
                 onMouseMove={handleMouseMove}
                 onMouseLeave={handleMouseLeave}
@@ -79,7 +84,10 @@ const ArchitectSection = () => {
                     <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none bg-gradient-to-br from-white/5 to-transparent rounded-2xl" />
 
                     {/* Header */}
-                    <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6 relative z-10" style={{ transform: "translateZ(40px)" }}>
+                    <motion.div
+                        style={{ x: headerX, y: headerY }}
+                        className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6 relative z-10"
+                    >
                         <div>
                             <motion.h2
                                 initial={{ opacity: 0, x: -20 }}
@@ -100,10 +108,13 @@ const ArchitectSection = () => {
                                 <div className="w-3 h-3 rounded-full bg-green-500/50" />
                             </div>
                         </div>
-                    </div>
+                    </motion.div>
 
                     {/* Description Content */}
-                    <div className="grid md:grid-cols-2 gap-12 relative z-10" style={{ transform: "translateZ(20px)" }}>
+                    <motion.div
+                        style={{ x: contentX, y: contentY }}
+                        className="grid md:grid-cols-2 gap-12 relative z-10"
+                    >
                         <div className="space-y-6 text-lg md:text-xl text-gray-300 font-light leading-relaxed">
                             <p>
                                 I don&#39;t just write code; I <span className="text-white font-medium">engineer digital ecosystems</span>.
@@ -132,7 +143,7 @@ const ArchitectSection = () => {
                                 &gt; READY FOR DEPLOYMENT.
                             </div>
                         </div>
-                    </div>
+                    </motion.div>
 
                     {/* Decode/Glitch Decorations */}
                     <div className="absolute top-0 right-0 p-4 opacity-20 pointer-events-none" style={{ transform: "translateZ(10px)" }}>

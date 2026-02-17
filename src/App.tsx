@@ -1,4 +1,4 @@
-import { useState, useEffect, Suspense, lazy } from 'react';
+import { useState, Suspense, lazy } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import Navigation from './components/Navigation';
 
@@ -25,14 +25,10 @@ function App() {
     return !sessionStorage.getItem('hasVisited');
   });
 
-  const [currentPage, setCurrentPage] = useState(() => {
-    return localStorage.getItem('currentPage') || 'HOME';
-  });
+  /* Removed sessionStorage for currentPage - navigation resets on refresh */
+  const [currentPage, setCurrentPage] = useState('HOME');
 
-  // Update localStorage when currentPage changes
-  useEffect(() => {
-    localStorage.setItem('currentPage', currentPage);
-  }, [currentPage]);
+  /* Removed useEffect that saved currentPage */
 
   const handleNavigate = (page: string) => {
     if (page === 'ENTRY') return; // Entry page no longer exists
