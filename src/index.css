@@ -150,38 +150,174 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: #18181b; /* zinc-950 equivalent to match background, or transparent if needed */
+  background: #18181b;
+  /* zinc-950 equivalent to match background, or transparent if needed */
   opacity: 0.8;
 }
 
 .glitched-text::before {
   left: 2px;
-  text-shadow: -1px 0 #ea580c; /* orange-600 */
-  clip-path: inset(0 0 0 0); /* Replaced deprecated clip */
+  text-shadow: -1px 0 #ea580c;
+  /* orange-600 */
+  clip-path: inset(0 0 0 0);
+  /* Replaced deprecated clip */
   animation: glitch-anim-1 2.5s infinite linear alternate-reverse;
 }
 
 .glitched-text::after {
   left: -2px;
-  text-shadow: -1px 0 #2563eb; /* blue-600 */
+  text-shadow: -1px 0 #2563eb;
+  /* blue-600 */
   clip-path: inset(0 0 0 0);
   animation: glitch-anim-2 3s infinite linear alternate-reverse;
 }
 
 @keyframes glitch-anim-1 {
-  0% { clip-path: inset(20% 0 80% 0); }
-  20% { clip-path: inset(60% 0 10% 0); }
-  40% { clip-path: inset(40% 0 50% 0); }
-  60% { clip-path: inset(80% 0 5% 0); }
-  80% { clip-path: inset(10% 0 70% 0); }
-  100% { clip-path: inset(30% 0 20% 0); }
+  0% {
+    clip-path: inset(20% 0 80% 0);
+  }
+
+  20% {
+    clip-path: inset(60% 0 10% 0);
+  }
+
+  40% {
+    clip-path: inset(40% 0 50% 0);
+  }
+
+  60% {
+    clip-path: inset(80% 0 5% 0);
+  }
+
+  80% {
+    clip-path: inset(10% 0 70% 0);
+  }
+
+  100% {
+    clip-path: inset(30% 0 20% 0);
+  }
 }
 
 @keyframes glitch-anim-2 {
-  0% { clip-path: inset(10% 0 60% 0); }
-  20% { clip-path: inset(30% 0 20% 0); }
-  40% { clip-path: inset(70% 0 10% 0); }
-  60% { clip-path: inset(20% 0 50% 0); }
-  80% { clip-path: inset(50% 0 30% 0); }
-  100% { clip-path: inset(0% 0 90% 0); }
+  0% {
+    clip-path: inset(10% 0 60% 0);
+  }
+
+  20% {
+    clip-path: inset(30% 0 20% 0);
+  }
+
+  40% {
+    clip-path: inset(70% 0 10% 0);
+  }
+
+  60% {
+    clip-path: inset(20% 0 50% 0);
+  }
+
+  80% {
+    clip-path: inset(50% 0 30% 0);
+  }
+
+  100% {
+    clip-path: inset(0% 0 90% 0);
+  }
+}
+
+/* ── Resume Page Animations ── */
+
+/* Shimmer text effect for experience titles */
+.resume-shimmer-text {
+  background: linear-gradient(90deg,
+      #fff 0%,
+      #fff 40%,
+      #fb923c 50%,
+      #fff 60%,
+      #fff 100%);
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: resume-shimmer 4s ease-in-out infinite;
+}
+
+@keyframes resume-shimmer {
+
+  0%,
+  100% {
+    background-position: 200% center;
+  }
+
+  50% {
+    background-position: -200% center;
+  }
+}
+
+/* Blinking terminal cursor */
+.resume-terminal-cursor {
+  animation: resume-blink 1s step-end infinite;
+}
+
+@keyframes resume-blink {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0;
+  }
+}
+
+/* Rotating gradient border for contact widget */
+.resume-gradient-rotate {
+  background-size: 200% 200%;
+  animation: resume-gradient-shift 6s ease infinite;
+}
+
+@keyframes resume-gradient-shift {
+
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* Download button glow pulse */
+.resume-download-btn {
+  animation: resume-glow-pulse 3s ease-in-out infinite;
+}
+
+@keyframes resume-glow-pulse {
+
+  0%,
+  100% {
+    box-shadow: 0 0 30px rgba(249, 115, 22, 0.3);
+  }
+
+  50% {
+    box-shadow: 0 0 50px rgba(249, 115, 22, 0.5), 0 0 80px rgba(249, 115, 22, 0.2);
+  }
+}
+
+/* Subtle glow for badges */
+.resume-glow-pulse-subtle {
+  animation: resume-glow-subtle 3s ease-in-out infinite;
+}
+
+@keyframes resume-glow-subtle {
+
+  0%,
+  100% {
+    box-shadow: 0 0 0px rgba(249, 115, 22, 0);
+  }
+
+  50% {
+    box-shadow: 0 0 8px rgba(249, 115, 22, 0.3);
+  }
 }

@@ -118,9 +118,10 @@ function ProjectsPage() {
           <motion.h1
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-5xl md:text-6xl font-black mb-4 tracking-tight text-white"
+            className="text-5xl md:text-6xl font-black mb-4 tracking-tight text-white uppercase glitched-text"
+            data-text="FEATURED PROJECTS"
           >
-            Featured Projects
+            FEATURED PROJECTS
           </motion.h1>
           <motion.p
             initial={{ opacity: 0 }}
