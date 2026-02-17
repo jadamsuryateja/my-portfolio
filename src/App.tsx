@@ -1,4 +1,5 @@
 import { useState, Suspense, lazy } from 'react';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import Navigation from './components/Navigation';
 
@@ -20,42 +21,15 @@ const PageLoader = () => (
 );
 
 function App() {
+  const location = useLocation();
   const [loading, setLoading] = useState(() => {
     // Check if we've already visited in this session
     return !sessionStorage.getItem('hasVisited');
   });
 
-  /* Removed sessionStorage for currentPage - navigation resets on refresh */
-  const [currentPage, setCurrentPage] = useState('HOME');
-
-  /* Removed useEffect that saved currentPage */
-
-  const handleNavigate = (page: string) => {
-    if (page === 'ENTRY') return; // Entry page no longer exists
-    setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
   const handleLoadingComplete = () => {
     setLoading(false);
     sessionStorage.setItem('hasVisited', 'true');
-  };
-
-  const renderPage = () => {
-    switch (currentPage) {
-      case 'HOME':
-        return <HomePage onNavigate={handleNavigate} />;
-      case 'RESUME':
-        return <ResumePage />;
-      case 'MY PROJECTS':
-        return <ProjectsPage />;
-      case 'MY SERVICES':
-        return <ServicesPage />;
-      case 'CONTACT':
-        return <ContactPage />;
-      default:
-        return <HomePage onNavigate={handleNavigate} />;
-    }
   };
 
   return (
@@ -67,19 +41,31 @@ function App() {
       {!loading && (
         <div className="min-h-screen relative">
           <div className="fixed inset-0 z-[-1]">
-            <img
-              src="/background.webp"
-              alt="background"
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-black/20" />
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.6)_100%)]" />
+            {/* Use conditional background based on route if needed, or keeping global background for consistency */}
+            {location.pathname !== '/services' ? (
+              <>
+                <img
+                  src="/background.webp"
+                  alt="background"
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-black/20" />
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.6)_100%)]" />
+              </>
+            ) : null} {/* Services page has its own background */}
           </div>
           <CustomCursor />
           <>
-            <Navigation currentPage={currentPage} onNavigate={handleNavigate} />
+            <Navigation />
             <Suspense fallback={<PageLoader />}>
-              {renderPage()}
+              <Routes location={location} key={location.pathname}>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/resume" element={<ResumePage />} />
+                <Route path="/projects" element={<ProjectsPage />} />
+                <Route path="/services" element={<ServicesPage />} />
+                <Route path="/contact" element={<ContactPage />} />
+                <Route path="*" element={<HomePage />} />
+              </Routes>
             </Suspense>
           </>
         </div>

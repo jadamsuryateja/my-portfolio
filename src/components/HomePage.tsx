@@ -7,11 +7,7 @@ import ArsenalSection from './ArsenalSection';
 
 gsap.registerPlugin(ScrollTrigger);
 
-interface HomePageProps {
-    onNavigate: (page: string) => void;
-}
-
-function HomePage({ onNavigate }: HomePageProps) {
+function HomePage() {
     const mainRef = useRef<HTMLDivElement>(null);
 
     useLayoutEffect(() => {
