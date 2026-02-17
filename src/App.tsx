@@ -2,6 +2,7 @@ import { useState, Suspense, lazy } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import Navigation from './components/Navigation';
+import ScrollToTop from './components/ScrollToTop';
 
 import HomePage from './components/HomePage';
 import CustomCursor from './components/CustomCursor';
@@ -56,6 +57,7 @@ function App() {
           </div>
           <CustomCursor />
           <>
+            <ScrollToTop />
             <Navigation />
             <Suspense fallback={<PageLoader />}>
               <Routes location={location} key={location.pathname}>
