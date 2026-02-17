@@ -66,10 +66,15 @@ function ServicesPage() {
   return (
     <div ref={containerRef} className="min-h-screen pt-24 pb-20 relative overflow-hidden bg-zinc-950 perspective-2000">
 
-      {/* Dynamic Background Mesh */}
+      {/* Background Image & Overlay */}
       <div className="absolute inset-0 z-0 pointer-events-none">
-        <div className="absolute top-[-20%] left-[-10%] w-[70%] h-[70%] bg-purple-900/20 rounded-full blur-[150px] animate-pulse" />
-        <div className="absolute bottom-[-20%] right-[-10%] w-[70%] h-[70%] bg-blue-900/20 rounded-full blur-[150px] animate-pulse delay-1000" />
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: `url('/background.webp')` }}
+        />
+        <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
+
+        {/* Subtle Grid Overlay */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-[size:32px_32px]" />
       </div>
 
