@@ -91,10 +91,11 @@ function ServicesPage() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-6xl md:text-8xl font-black text-white tracking-tighter mb-6 drop-shadow-2xl glitched-text"
-            data-text="MY SERVICES"
+            className="text-6xl md:text-8xl font-black text-white tracking-tighter mb-6 drop-shadow-2xl"
           >
-            MY SERVICES
+            <span className="glitched-text" data-text="MY SERVICES">
+              MY SERVICES
+            </span>
           </motion.h1>
 
           <motion.p

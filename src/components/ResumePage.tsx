@@ -210,8 +210,10 @@ function ResumePage() {
               >
                 // PROFESSIONAL_JOURNEY
               </motion.p>
-              <h1 className="text-4xl sm:text-6xl md:text-8xl font-black text-white tracking-tighter glitched-text" data-text="RESUME">
-                RESUME
+              <h1 className="text-4xl sm:text-6xl md:text-8xl font-black text-white tracking-tighter">
+                <span className="glitched-text" data-text="RESUME">
+                  RESUME
+                </span>
               </h1>
               <motion.p
                 initial={{ opacity: 0 }}

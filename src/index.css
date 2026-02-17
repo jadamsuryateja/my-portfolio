@@ -140,6 +140,8 @@
 /* Glitch Effect */
 .glitched-text {
   position: relative;
+  display: inline-block;
+  /* Ensure glitch fits text width */
 }
 
 .glitched-text::before,
@@ -150,8 +152,8 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: #18181b;
-  /* zinc-950 equivalent to match background, or transparent if needed */
+  background: transparent;
+  /* Changed from solid color to transparent */
   opacity: 0.8;
 }
 
