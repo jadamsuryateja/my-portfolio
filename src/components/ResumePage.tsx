@@ -18,7 +18,8 @@ import {
   ChevronRight,
   ZoomIn,
   ZoomOut,
-  Maximize,
+  ExternalLink,
+  Link as LinkIcon,
 } from 'lucide-react';
 import { AnimatePresence, motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { Document, Page, pdfjs } from 'react-pdf';
@@ -91,7 +92,7 @@ const ExperienceCard = () => {
         }}
       />
 
-      <div className="bg-white/[0.03] backdrop-blur-xl p-5 sm:p-8 rounded-2xl border border-white/10 hover:border-orange-500/30 transition-all duration-500 relative overflow-hidden">
+      <div className="bg-black/90 md:bg-white/[0.03] md:backdrop-blur-xl p-5 sm:p-8 rounded-2xl border border-white/10 hover:border-orange-500/30 transition-all duration-500 relative overflow-hidden">
         {/* animated top border */}
         <div className="absolute top-0 left-0 w-0 group-hover:w-full h-[2px] bg-gradient-to-r from-orange-500 via-yellow-500 to-orange-500 transition-all duration-1000" />
         {/* animated bottom border */}
@@ -136,6 +137,8 @@ function ResumePage() {
   const [pageNumber, setPageNumber] = useState(1);
   const [scale, setScale] = useState(1.0);
   const [containerWidth, setContainerWidth] = useState(0);
+  const [extractedLinks, setExtractedLinks] = useState<Array<{ url: string; page: number }>>([]);
+  const [showMobileLinks, setShowMobileLinks] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -162,8 +165,39 @@ function ResumePage() {
     };
   }, [showResume]);
 
-  function onDocumentLoadSuccess({ numPages }: { numPages: number }) {
-    setNumPages(numPages);
+  useEffect(() => {
+    if (showResume) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [showResume]);
+
+  async function onDocumentLoadSuccess(pdf: any) {
+    setNumPages(pdf.numPages);
+
+    // Extract links
+    const links: Array<{ url: string; page: number }> = [];
+    try {
+      for (let i = 1; i <= pdf.numPages; i++) {
+        const page = await pdf.getPage(i);
+        const annotations = await page.getAnnotations();
+        const pageLinks = annotations
+          .filter((a: any) => a.subtype === 'Link' && a.url)
+          .map((a: any) => ({ url: a.url, page: i }));
+        links.push(...pageLinks);
+      }
+      // Remove duplicates
+      const uniqueLinks = Array.from(new Set(links.map(l => l.url)))
+        .map(url => links.find(l => l.url === url)!);
+
+      setExtractedLinks(uniqueLinks);
+    } catch (error) {
+      console.error("Error extracting links:", error);
+    }
   }
 
   const zoomIn = () => setScale(prev => Math.min(prev + 0.1, 2.0));
@@ -214,10 +248,17 @@ function ResumePage() {
 
 
   return (
-    <div ref={sectionRef} className="min-h-screen pt-20 pb-20 relative overflow-hidden">
+    <div ref={sectionRef} className="min-h-screen pt-32 pb-20 relative overflow-hidden">
 
       {/* ── Ambient Background ── */}
-      <div className="absolute inset-0 z-0 pointer-events-none">
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        {/* Optimized Sticky Background Image */}
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-20"
+          style={{ backgroundImage: 'url(/background.webp)' }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/50 to-black/80" />
+
         <div className="absolute top-[-15%] left-[-10%] w-[300px] h-[300px] md:w-[600px] md:h-[600px] bg-orange-500/8 rounded-full blur-[100px] md:blur-[180px] animate-pulse" style={{ animationDuration: '6s' }} />
         <div className="absolute bottom-[-15%] right-[-10%] w-[300px] h-[300px] md:w-[600px] md:h-[600px] bg-yellow-500/8 rounded-full blur-[100px] md:blur-[180px] animate-pulse" style={{ animationDuration: '8s' }} />
         <div className="absolute top-[30%] left-[60%] w-[200px] h-[200px] md:w-[400px] md:h-[400px] bg-purple-500/5 rounded-full blur-[80px] md:blur-[150px] animate-pulse" style={{ animationDuration: '10s' }} />
@@ -423,7 +464,7 @@ function ResumePage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6 }}
-                className="bg-black/50 backdrop-blur-xl rounded-2xl border border-white/10 overflow-hidden group/term hover:border-green-500/20 transition-colors duration-500"
+                className="bg-black/90 md:bg-black/50 md:backdrop-blur-xl rounded-2xl border border-white/10 overflow-hidden group/term hover:border-green-500/20 transition-colors duration-500"
               >
                 {/* Terminal Header */}
                 <div className="flex items-center gap-2 px-3 sm:px-5 py-2.5 sm:py-3 bg-white/[0.03] border-b border-white/5">
@@ -496,10 +537,10 @@ function ResumePage() {
               className="rounded-2xl md:sticky md:top-24 overflow-hidden"
             >
               {/* animated gradient border */}
-              <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-orange-500/30 via-purple-500/20 to-cyan-500/30 resume-gradient-rotate" />
-              <div className="absolute inset-[1px] rounded-2xl bg-zinc-950/95 backdrop-blur-xl" />
+              <div className="hidden md:block absolute inset-0 rounded-2xl bg-gradient-to-br from-orange-500/30 via-purple-500/20 to-cyan-500/30 resume-gradient-rotate" />
+              <div className="hidden md:block absolute inset-[1px] rounded-2xl bg-zinc-950/95 backdrop-blur-xl" />
 
-              <div className="relative z-10 p-4 sm:p-6">
+              <div className="relative z-10 sm:p-6 p-4">
                 {/* Header */}
                 <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center gap-2">
@@ -647,28 +688,33 @@ function ResumePage() {
               className="w-full max-w-6xl h-[85vh] bg-[#0a0a0a] rounded-2xl border border-white/10 shadow-2xl overflow-hidden flex flex-col relative"
             >
               {/* Modal Header */}
-              <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 bg-white/[0.02]">
+              <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-white/10 bg-white/[0.02]">
                 <div className="flex items-center gap-3">
-                  <div className="w-3 h-3 rounded-full bg-red-500/80" />
-                  <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
-                  <div className="w-3 h-3 rounded-full bg-green-500/80" />
-                  <span className="ml-4 text-sm font-mono text-gray-400 flex items-center gap-2">
-                    <Terminal size={14} className="text-orange-500" />
-                    resume_preview.pdf
+                  <div className="flex gap-1.5 sm:gap-2">
+                    <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-red-500/80" />
+                    <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-yellow-500/80" />
+                    <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-green-500/80" />
+                  </div>
+                  <span className="ml-2 sm:ml-4 text-xs sm:text-sm font-mono text-gray-400 flex items-center gap-2">
+                    <Terminal size={12} className="text-orange-500 sm:w-[14px] sm:h-[14px]" />
+                    <span className="truncate max-w-[100px] sm:max-w-none">resume_pdf</span>
                   </span>
                 </div>
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2 sm:gap-4">
                   <a
                     href="/Jadamsuryateja-FullStackDevloper.pdf"
                     download="Jadam_Surya_Teja_Resume.pdf"
-                    className="flex items-center gap-2 text-xs font-medium text-gray-400 hover:text-orange-400 transition-colors"
+                    className="flex items-center gap-2 text-xs font-medium text-gray-400 hover:text-orange-400 transition-colors bg-white/5 p-2 rounded-lg sm:bg-transparent sm:p-0"
+                    title="Download Resume"
                   >
-                    <Download size={14} />
-                    DOWNLOAD
+                    <Download size={16} className="sm:w-[14px] sm:h-[14px]" />
+                    <span className="hidden sm:inline">DOWNLOAD</span>
                   </a>
+                  <div className="w-px h-4 bg-white/10 sm:hidden" />
                   <button
                     onClick={() => setShowResume(false)}
                     className="p-2 hover:bg-white/10 rounded-lg transition-colors text-gray-400 hover:text-white"
+                    aria-label="Close"
                   >
                     <X size={20} />
                   </button>
@@ -676,8 +722,10 @@ function ResumePage() {
               </div>
 
               {/* Toolbar */}
-              <div className="flex items-center justify-between px-6 py-2 bg-black/40 border-b border-white/5 backdrop-blur-sm">
-                <div className="flex items-center gap-4">
+              <div className="flex items-center justify-between px-4 sm:px-6 py-2 bg-black/40 border-b border-white/5 backdrop-blur-sm">
+                <div className="flex items-center gap-2 sm:gap-4 mx-auto sm:mx-0 w-full sm:w-auto justify-between sm:justify-start">
+
+                  {/* Page Navigation */}
                   <div className="flex items-center gap-2 bg-white/5 rounded-lg p-1">
                     <button
                       onClick={() => setPageNumber(prev => Math.max(prev - 1, 1))}
@@ -698,8 +746,9 @@ function ResumePage() {
                     </button>
                   </div>
 
-                  <div className="w-px h-4 bg-white/10" />
+                  <div className="w-px h-4 bg-white/10 hidden sm:block" />
 
+                  {/* Zoom Controls */}
                   <div className="flex items-center gap-2 bg-white/5 rounded-lg p-1">
                     <button
                       onClick={zoomOut}
@@ -707,7 +756,7 @@ function ResumePage() {
                     >
                       <ZoomOut size={16} className="text-white" />
                     </button>
-                    <span className="text-xs font-mono text-gray-400 min-w-[4ch] text-center">
+                    <span className="text-xs font-mono text-gray-400 min-w-[4ch] text-center hidden sm:inline-block">
                       {Math.round(scale * 100)}%
                     </span>
                     <button
@@ -717,43 +766,171 @@ function ResumePage() {
                       <ZoomIn size={16} className="text-white" />
                     </button>
                   </div>
+
+                  {/* Mobile Links Button */}
+                  <div className="lg:hidden ml-2">
+                    <button
+                      onClick={() => setShowMobileLinks(true)}
+                      className="px-3 py-1.5 bg-orange-500/10 hover:bg-orange-500/20 text-orange-400 border border-orange-500/20 rounded-lg transition-colors text-xs font-bold tracking-wider relative"
+                    >
+                      LINKS
+                      {extractedLinks.length > 0 && (
+                        <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-orange-500 rounded-full border-2 border-black" />
+                      )}
+                    </button>
+                  </div>
+
                 </div>
               </div>
 
-              {/* PDF Viewer */}
-              <div
-                ref={modalRef}
-                className="flex-1 bg-black/90 relative w-full h-full overflow-y-auto overflow-x-hidden custom-scrollbar p-4 sm:p-8 flex justify-center"
-              >
-                <Document
-                  file="/Jadamsuryateja-FullStackDevloper.pdf"
-                  onLoadSuccess={onDocumentLoadSuccess}
-                  className="flex flex-col items-center gap-8"
-                  loading={
-                    <div className="flex flex-col items-center gap-4 mt-20">
-                      <div className="w-8 h-8 border-2 border-orange-500 border-t-transparent rounded-full animate-spin" />
-                      <span className="text-gray-400 text-sm font-mono animate-pulse">Initializing Visualization...</span>
-                    </div>
-                  }
-                  onLoadError={(error) => console.error("Error loading PDF:", error)}
+              {/* PDF Viewer & Sidebar Layout */}
+              <div className="flex flex-1 overflow-hidden relative">
+
+                {/* Links Sidebar - Desktop */}
+                <div className="hidden lg:flex w-64 border-r border-white/10 flex-col bg-black/20 backdrop-blur-sm">
+                  <div className="p-4 border-b border-white/5 bg-white/[0.02]">
+                    <h4 className="text-sm font-semibold text-gray-300 flex items-center gap-2">
+                      <LinkIcon size={14} className="text-orange-500" />
+                      Detected Links
+                    </h4>
+                  </div>
+                  <div className="flex-1 overflow-y-auto p-2 space-y-2 custom-scrollbar">
+                    {extractedLinks.length === 0 ? (
+                      <div className="text-center py-8 text-gray-600 text-xs">
+                        No links detected
+                      </div>
+                    ) : (
+                      extractedLinks.map((link, idx) => (
+                        <a
+                          key={idx}
+                          href={link.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-start gap-2 p-2 rounded-lg hover:bg-white/5 transition-colors group text-left"
+                        >
+                          <div className="mt-1 p-1.5 rounded-md bg-white/5 group-hover:bg-orange-500/20 transition-colors">
+                            <ExternalLink size={12} className="text-gray-400 group-hover:text-orange-400" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs text-gray-300 truncate group-hover:text-white transition-colors">
+                              {link.url.replace(/^https?:\/\/(www\.)?/, '').split('/')[0]}
+                            </p>
+                            <p className="text-[10px] text-gray-600 truncate">
+                              Page {link.page} • {link.url}
+                            </p>
+                          </div>
+                        </a>
+                      ))
+                    )}
+                  </div>
+                </div>
+
+                {/* PDF Content */}
+                <div
+                  ref={modalRef}
+                  className="flex-1 bg-black/90 relative w-full h-full overflow-y-auto overflow-x-hidden custom-scrollbar p-4 sm:p-8 flex justify-center"
                 >
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}
-                    className="shadow-2xl shadow-orange-500/10"
+                  <Document
+                    file="/Jadamsuryateja-FullStackDevloper.pdf"
+                    onLoadSuccess={onDocumentLoadSuccess}
+                    className="flex flex-col items-center gap-8"
+                    loading={
+                      <div className="flex flex-col items-center gap-4 mt-20">
+                        <div className="w-8 h-8 border-2 border-orange-500 border-t-transparent rounded-full animate-spin" />
+                        <span className="text-gray-400 text-sm font-mono animate-pulse">Initializing Visualization...</span>
+                      </div>
+                    }
+                    onLoadError={(error) => console.error("Error loading PDF:", error)}
                   >
-                    <Page
-                      pageNumber={pageNumber}
-                      scale={scale}
-                      width={containerWidth ? Math.min(containerWidth - 64, 800) : undefined}
-                      renderTextLayer={false}
-                      renderAnnotationLayer={false}
-                      className="border border-white/10 rounded-sm overflow-hidden"
-                    />
-                  </motion.div>
-                </Document>
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5 }}
+                      className="shadow-2xl shadow-orange-500/10"
+                    >
+                      <Page
+                        pageNumber={pageNumber}
+                        scale={scale}
+                        width={containerWidth ? Math.min(containerWidth - 64, 800) : undefined}
+                        renderTextLayer={false}
+                        renderAnnotationLayer={false} // We are extracting links manually, so we can disable this if we want, or keep it for in-pdf clicking
+                        className="border border-white/10 rounded-sm overflow-hidden"
+                      />
+                    </motion.div>
+                  </Document>
+                </div>
               </div>
+
+              {/* Mobile Links Bottom Sheet */}
+              <AnimatePresence>
+                {showMobileLinks && (
+                  <>
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      onClick={() => setShowMobileLinks(false)}
+                      className="absolute inset-0 bg-black/60 backdrop-blur-sm z-10 lg:hidden"
+                    />
+                    <motion.div
+                      initial={{ y: '100%' }}
+                      animate={{ y: 0 }}
+                      exit={{ y: '100%' }}
+                      transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                      drag="y"
+                      dragConstraints={{ top: 0 }}
+                      dragElastic={0.2}
+                      onDragEnd={(_, info) => {
+                        if (info.offset.y > 100) setShowMobileLinks(false);
+                      }}
+                      className="absolute bottom-0 left-0 right-0 bg-[#0f0f0f] border-t border-white/10 rounded-t-2xl z-20 lg:hidden max-h-[60vh] flex flex-col shadow-2xl"
+                    >
+                      {/* Drag Handle */}
+                      <div className="w-full flex justify-center pt-3 pb-1" onClick={() => setShowMobileLinks(false)}>
+                        <div className="w-12 h-1.5 bg-white/20 rounded-full" />
+                      </div>
+
+                      <div className="p-4 border-b border-white/5 bg-white/[0.02]">
+                        <h4 className="text-sm font-semibold text-gray-300 flex items-center gap-2">
+                          <LinkIcon size={14} className="text-orange-500" />
+                          Detected Links
+                        </h4>
+                      </div>
+
+                      <div className="flex-1 overflow-y-auto p-4 space-y-2 custom-scrollbar pb-8">
+                        {extractedLinks.length === 0 ? (
+                          <div className="text-center py-8 text-gray-600 text-xs">
+                            No links detected
+                          </div>
+                        ) : (
+                          extractedLinks.map((link, idx) => (
+                            <a
+                              key={idx}
+                              href={link.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-start gap-3 p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors group"
+                            >
+                              <div className="mt-1 p-2 rounded-lg bg-black/40 group-hover:bg-orange-500/20 transition-colors">
+                                <ExternalLink size={14} className="text-gray-400 group-hover:text-orange-400" />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-medium text-gray-200 truncate group-hover:text-white transition-colors">
+                                  {link.url.replace(/^https?:\/\/(www\.)?/, '').split('/')[0]}
+                                </p>
+                                <p className="text-xs text-gray-500 truncate mt-0.5">
+                                  {link.url}
+                                </p>
+                              </div>
+                            </a>
+                          ))
+                        )}
+                      </div>
+                    </motion.div>
+                  </>
+                )}
+              </AnimatePresence>
+
             </motion.div>
           </motion.div>
         )}

@@ -136,10 +136,11 @@ function ProjectsPage() {
 
         {/* Projects Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {projects.map((project) => (
+          {projects.map((project, index) => (
             <ProjectCard
               key={project.id}
               project={project}
+              index={index}
               onClick={() => setSelectedId(project.id)}
             />
           ))}
@@ -237,7 +238,7 @@ function ProjectsPage() {
 // -------------------------------------------------------------------------
 // 3D Parallax Card Component
 // -------------------------------------------------------------------------
-const ProjectCard = ({ project, onClick }: { project: any, onClick: () => void }) => {
+const ProjectCard = ({ project, index, onClick }: { project: any, index: number, onClick: () => void }) => {
   const ref = useRef<HTMLDivElement>(null);
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -279,7 +280,10 @@ const ProjectCard = ({ project, onClick }: { project: any, onClick: () => void }
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       onClick={onClick}
-      initial="initial"
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ duration: 0.5, delay: index * 0.1 }}
       whileHover="hover"
       layoutId={`card-${project.id}`}
       style={{
