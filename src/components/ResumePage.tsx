@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import {
   GraduationCap,
   Briefcase,
@@ -12,8 +12,22 @@ import {
   Terminal,
   Sparkles,
   ArrowUpRight,
+  Eye,
+  X,
+  ChevronLeft,
+  ChevronRight,
+  ZoomIn,
+  ZoomOut,
+  Maximize,
 } from 'lucide-react';
-import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import { AnimatePresence, motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import { Document, Page, pdfjs } from 'react-pdf';
+import 'react-pdf/dist/Page/AnnotationLayer.css';
+import 'react-pdf/dist/Page/TextLayer.css';
+
+// Configure PDF.js worker
+// Configure PDF.js worker
+pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 
 
@@ -117,6 +131,43 @@ const ExperienceCard = () => {
 // ── Main Resume Page ───────────────────────────────────────────────
 function ResumePage() {
   const sectionRef = useRef<HTMLDivElement>(null);
+  const [showResume, setShowResume] = useState(false);
+  const [numPages, setNumPages] = useState<number | null>(null);
+  const [pageNumber, setPageNumber] = useState(1);
+  const [scale, setScale] = useState(1.0);
+  const [containerWidth, setContainerWidth] = useState(0);
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (showResume && modalRef.current) {
+      setContainerWidth(modalRef.current.clientWidth);
+      const handleResize = () => {
+        if (modalRef.current) {
+          setContainerWidth(modalRef.current.clientWidth);
+        }
+      };
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
+    }
+  }, [showResume]);
+
+  useEffect(() => {
+    if (showResume) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [showResume]);
+
+  function onDocumentLoadSuccess({ numPages }: { numPages: number }) {
+    setNumPages(numPages);
+  }
+
+  const zoomIn = () => setScale(prev => Math.min(prev + 0.1, 2.0));
+  const zoomOut = () => setScale(prev => Math.max(prev - 0.1, 0.5));
 
   const sectionVariants = {
     hidden: { opacity: 0, y: 60 },
@@ -225,30 +276,48 @@ function ResumePage() {
               </motion.p>
             </div>
 
-            <motion.a
-              href="/Jadamsuryateja-FullStackDevloper.pdf"
-              download="Jadam_Surya_Teja_Resume.pdf"
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.4 }}
-              whileHover={{ scale: 1.06 }}
-              whileTap={{ scale: 0.95 }}
-              className="relative group px-5 sm:px-8 py-3 sm:py-3.5 rounded-full overflow-hidden"
-            >
-              {/* Animated gradient border */}
-              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-orange-500 via-yellow-400 to-orange-500 resume-gradient-rotate" />
-              {/* Inner fill */}
-              <div className="absolute inset-[2px] rounded-full bg-black/90 group-hover:bg-black/70 transition-colors duration-500" />
-              {/* Shimmer sweep on hover */}
-              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-transparent via-white/15 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000 ease-in-out" />
-              {/* Glow */}
-              <div className="absolute inset-0 rounded-full shadow-[0_0_25px_rgba(249,115,22,0.3)] group-hover:shadow-[0_0_40px_rgba(249,115,22,0.5)] transition-shadow duration-500" />
-              {/* Content */}
-              <span className="relative z-10 flex items-center gap-2 sm:gap-3 text-white font-bold text-sm sm:text-base tracking-wide">
-                <Download className="group-hover:animate-bounce" size={18} />
-                <span className="bg-gradient-to-r from-orange-300 to-yellow-300 bg-clip-text text-transparent">Download CV</span>
-              </span>
-            </motion.a>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <motion.button
+                onClick={() => setShowResume(true)}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.4 }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="relative group px-6 py-3 rounded-full overflow-hidden bg-white/5 border border-white/10 hover:border-orange-500/50 transition-colors"
+              >
+                <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <span className="relative z-10 flex items-center gap-2 text-white font-medium">
+                  <Eye size={18} className="text-orange-400 group-hover:text-white transition-colors" />
+                  <span>View Resume</span>
+                </span>
+              </motion.button>
+
+              <motion.a
+                href="/Jadamsuryateja-FullStackDevloper.pdf"
+                download="Jadam_Surya_Teja_Resume.pdf"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.5 }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="relative group px-6 py-3 rounded-full overflow-hidden"
+              >
+                {/* Animated gradient border */}
+                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-orange-500 via-yellow-400 to-orange-500 resume-gradient-rotate" />
+                {/* Inner fill */}
+                <div className="absolute inset-[2px] rounded-full bg-black/90 group-hover:bg-black/70 transition-colors duration-500" />
+                {/* Shimmer sweep on hover */}
+                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-transparent via-white/15 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000 ease-in-out" />
+                {/* Glow */}
+                <div className="absolute inset-0 rounded-full shadow-[0_0_25px_rgba(249,115,22,0.3)] group-hover:shadow-[0_0_40px_rgba(249,115,22,0.5)] transition-shadow duration-500" />
+                {/* Content */}
+                <span className="relative z-10 flex items-center gap-2 sm:gap-3 text-white font-bold text-sm sm:text-base tracking-wide">
+                  <Download className="group-hover:animate-bounce" size={18} />
+                  <span className="bg-gradient-to-r from-orange-300 to-yellow-300 bg-clip-text text-transparent">Download Resume</span>
+                </span>
+              </motion.a>
+            </div>
           </div>
 
           {/* decorative line */}
@@ -559,6 +628,136 @@ function ResumePage() {
           </div>
         </div>
       </div>
+
+      {/* ── Resume Preview Modal ── */}
+      <AnimatePresence>
+        {showResume && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-8 bg-black/80 backdrop-blur-md"
+            onClick={() => setShowResume(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-6xl h-[85vh] bg-[#0a0a0a] rounded-2xl border border-white/10 shadow-2xl overflow-hidden flex flex-col relative"
+            >
+              {/* Modal Header */}
+              <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 bg-white/[0.02]">
+                <div className="flex items-center gap-3">
+                  <div className="w-3 h-3 rounded-full bg-red-500/80" />
+                  <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
+                  <div className="w-3 h-3 rounded-full bg-green-500/80" />
+                  <span className="ml-4 text-sm font-mono text-gray-400 flex items-center gap-2">
+                    <Terminal size={14} className="text-orange-500" />
+                    resume_preview.pdf
+                  </span>
+                </div>
+                <div className="flex items-center gap-4">
+                  <a
+                    href="/Jadamsuryateja-FullStackDevloper.pdf"
+                    download="Jadam_Surya_Teja_Resume.pdf"
+                    className="flex items-center gap-2 text-xs font-medium text-gray-400 hover:text-orange-400 transition-colors"
+                  >
+                    <Download size={14} />
+                    DOWNLOAD
+                  </a>
+                  <button
+                    onClick={() => setShowResume(false)}
+                    className="p-2 hover:bg-white/10 rounded-lg transition-colors text-gray-400 hover:text-white"
+                  >
+                    <X size={20} />
+                  </button>
+                </div>
+              </div>
+
+              {/* Toolbar */}
+              <div className="flex items-center justify-between px-6 py-2 bg-black/40 border-b border-white/5 backdrop-blur-sm">
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2 bg-white/5 rounded-lg p-1">
+                    <button
+                      onClick={() => setPageNumber(prev => Math.max(prev - 1, 1))}
+                      disabled={pageNumber <= 1}
+                      className="p-1 hover:bg-white/10 rounded disabled:opacity-30 transition-colors"
+                    >
+                      <ChevronLeft size={16} className="text-white" />
+                    </button>
+                    <span className="text-xs font-mono text-gray-400 min-w-[3ch] text-center">
+                      {pageNumber}/{numPages || '--'}
+                    </span>
+                    <button
+                      onClick={() => setPageNumber(prev => Math.min(prev + 1, numPages || 1))}
+                      disabled={pageNumber >= (numPages || 1)}
+                      className="p-1 hover:bg-white/10 rounded disabled:opacity-30 transition-colors"
+                    >
+                      <ChevronRight size={16} className="text-white" />
+                    </button>
+                  </div>
+
+                  <div className="w-px h-4 bg-white/10" />
+
+                  <div className="flex items-center gap-2 bg-white/5 rounded-lg p-1">
+                    <button
+                      onClick={zoomOut}
+                      className="p-1 hover:bg-white/10 rounded transition-colors"
+                    >
+                      <ZoomOut size={16} className="text-white" />
+                    </button>
+                    <span className="text-xs font-mono text-gray-400 min-w-[4ch] text-center">
+                      {Math.round(scale * 100)}%
+                    </span>
+                    <button
+                      onClick={zoomIn}
+                      className="p-1 hover:bg-white/10 rounded transition-colors"
+                    >
+                      <ZoomIn size={16} className="text-white" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* PDF Viewer */}
+              <div
+                ref={modalRef}
+                className="flex-1 bg-black/90 relative w-full h-full overflow-y-auto overflow-x-hidden custom-scrollbar p-4 sm:p-8 flex justify-center"
+              >
+                <Document
+                  file="/Jadamsuryateja-FullStackDevloper.pdf"
+                  onLoadSuccess={onDocumentLoadSuccess}
+                  className="flex flex-col items-center gap-8"
+                  loading={
+                    <div className="flex flex-col items-center gap-4 mt-20">
+                      <div className="w-8 h-8 border-2 border-orange-500 border-t-transparent rounded-full animate-spin" />
+                      <span className="text-gray-400 text-sm font-mono animate-pulse">Initializing Visualization...</span>
+                    </div>
+                  }
+                  onLoadError={(error) => console.error("Error loading PDF:", error)}
+                >
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                    className="shadow-2xl shadow-orange-500/10"
+                  >
+                    <Page
+                      pageNumber={pageNumber}
+                      scale={scale}
+                      width={containerWidth ? Math.min(containerWidth - 64, 800) : undefined}
+                      renderTextLayer={false}
+                      renderAnnotationLayer={false}
+                      className="border border-white/10 rounded-sm overflow-hidden"
+                    />
+                  </motion.div>
+                </Document>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
