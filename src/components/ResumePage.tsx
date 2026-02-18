@@ -23,10 +23,10 @@ import {
 } from 'lucide-react';
 import { AnimatePresence, motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { Document, Page, pdfjs } from 'react-pdf';
+import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
 
-// Configure PDF.js worker
 // Configure PDF.js worker
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
@@ -135,7 +135,6 @@ function ResumePage() {
   const [showResume, setShowResume] = useState(false);
   const [numPages, setNumPages] = useState<number | null>(null);
   const [pageNumber, setPageNumber] = useState(1);
-  const [scale, setScale] = useState(1.0);
   const [containerWidth, setContainerWidth] = useState(0);
   const [extractedLinks, setExtractedLinks] = useState<Array<{ url: string; page: number }>>([]);
   const [showMobileLinks, setShowMobileLinks] = useState(false);
@@ -200,8 +199,7 @@ function ResumePage() {
     }
   }
 
-  const zoomIn = () => setScale(prev => Math.min(prev + 0.1, 2.0));
-  const zoomOut = () => setScale(prev => Math.max(prev - 0.1, 0.5));
+
 
   const sectionVariants = {
     hidden: { opacity: 0, y: 60 },
@@ -725,68 +723,6 @@ function ResumePage() {
                 </div>
               </div>
 
-              {/* Toolbar */}
-              <div className="flex items-center justify-between px-4 sm:px-6 py-2 bg-black/40 border-b border-white/5 backdrop-blur-sm">
-                <div className="flex items-center gap-2 sm:gap-4 mx-auto sm:mx-0 w-full sm:w-auto justify-between sm:justify-start">
-
-                  {/* Page Navigation */}
-                  <div className="flex items-center gap-2 bg-white/5 rounded-lg p-1">
-                    <button
-                      onClick={() => setPageNumber(prev => Math.max(prev - 1, 1))}
-                      disabled={pageNumber <= 1}
-                      className="p-1 hover:bg-white/10 rounded disabled:opacity-30 transition-colors"
-                    >
-                      <ChevronLeft size={16} className="text-white" />
-                    </button>
-                    <span className="text-xs font-mono text-gray-400 min-w-[3ch] text-center">
-                      {pageNumber}/{numPages || '--'}
-                    </span>
-                    <button
-                      onClick={() => setPageNumber(prev => Math.min(prev + 1, numPages || 1))}
-                      disabled={pageNumber >= (numPages || 1)}
-                      className="p-1 hover:bg-white/10 rounded disabled:opacity-30 transition-colors"
-                    >
-                      <ChevronRight size={16} className="text-white" />
-                    </button>
-                  </div>
-
-                  <div className="w-px h-4 bg-white/10 hidden sm:block" />
-
-                  {/* Zoom Controls */}
-                  <div className="flex items-center gap-2 bg-white/5 rounded-lg p-1">
-                    <button
-                      onClick={zoomOut}
-                      className="p-1 hover:bg-white/10 rounded transition-colors"
-                    >
-                      <ZoomOut size={16} className="text-white" />
-                    </button>
-                    <span className="text-xs font-mono text-gray-400 min-w-[4ch] text-center hidden sm:inline-block">
-                      {Math.round(scale * 100)}%
-                    </span>
-                    <button
-                      onClick={zoomIn}
-                      className="p-1 hover:bg-white/10 rounded transition-colors"
-                    >
-                      <ZoomIn size={16} className="text-white" />
-                    </button>
-                  </div>
-
-                  {/* Mobile Links Button */}
-                  <div className="lg:hidden ml-2">
-                    <button
-                      onClick={() => setShowMobileLinks(true)}
-                      className="px-3 py-1.5 bg-orange-500/10 hover:bg-orange-500/20 text-orange-400 border border-orange-500/20 rounded-lg transition-colors text-xs font-bold tracking-wider relative"
-                    >
-                      LINKS
-                      {extractedLinks.length > 0 && (
-                        <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-orange-500 rounded-full border-2 border-black" />
-                      )}
-                    </button>
-                  </div>
-
-                </div>
-              </div>
-
               {/* PDF Viewer & Sidebar Layout */}
               <div className="flex flex-1 overflow-hidden relative">
 
@@ -829,39 +765,118 @@ function ResumePage() {
                   </div>
                 </div>
 
-                {/* PDF Content */}
+                {/* PDF Content with Pinch-to-Zoom */}
                 <div
                   ref={modalRef}
-                  className="flex-1 bg-black/90 relative w-full h-full overflow-y-auto overflow-x-hidden custom-scrollbar p-4 sm:p-8 flex justify-center"
+                  className="flex-1 bg-black/90 relative w-full h-full overflow-hidden flex flex-col"
                 >
-                  <Document
-                    file="/Jadamsuryateja-FullStackDevloper.pdf"
-                    onLoadSuccess={onDocumentLoadSuccess}
-                    className="flex flex-col items-center gap-8"
-                    loading={
-                      <div className="flex flex-col items-center gap-4 mt-20">
-                        <div className="w-8 h-8 border-2 border-orange-500 border-t-transparent rounded-full animate-spin" />
-                        <span className="text-gray-400 text-sm font-mono animate-pulse">Initializing Visualization...</span>
-                      </div>
-                    }
-                    onLoadError={(error) => console.error("Error loading PDF:", error)}
+                  <TransformWrapper
+                    initialScale={1}
+                    minScale={0.5}
+                    maxScale={5}
+                    centerOnInit
+                    wheel={{ step: 0.4, smoothStep: 0.05 }}
+                    pinch={{ step: 10 }}
+                    doubleClick={{ step: 0.7, animationTime: 150 }}
+                    alignmentAnimation={{ animationTime: 150 }}
+                    velocityAnimation={{ animationTime: 150, sensitivity: 1.5 }}
                   >
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.5 }}
-                      className="shadow-2xl shadow-orange-500/10"
-                    >
-                      <Page
-                        pageNumber={pageNumber}
-                        scale={scale}
-                        width={containerWidth ? Math.min(containerWidth - 64, 800) : undefined}
-                        renderTextLayer={false}
-                        renderAnnotationLayer={false} // We are extracting links manually, so we can disable this if we want, or keep it for in-pdf clicking
-                        className="border border-white/10 rounded-sm overflow-hidden"
-                      />
-                    </motion.div>
-                  </Document>
+                    {({ zoomIn, zoomOut, instance }) => (
+                      <>
+                        {/* Toolbar (Moved inside wrapper to access controls) */}
+                        <div className="absolute top-0 left-0 right-0 z-10 flex items-center justify-between px-4 sm:px-6 py-2 bg-black/60 border-b border-white/5 backdrop-blur-md">
+                          <div className="flex items-center gap-2 sm:gap-4 mx-auto sm:mx-0 w-full sm:w-auto justify-between sm:justify-start">
+
+                            {/* Page Navigation */}
+                            <div className="flex items-center gap-2 bg-white/5 rounded-lg p-1">
+                              <button
+                                onClick={() => setPageNumber(prev => Math.max(prev - 1, 1))}
+                                disabled={pageNumber <= 1}
+                                className="p-1 hover:bg-white/10 rounded disabled:opacity-30 transition-colors"
+                              >
+                                <ChevronLeft size={16} className="text-white" />
+                              </button>
+                              <span className="text-xs font-mono text-gray-400 min-w-[3ch] text-center">
+                                {pageNumber}/{numPages || '--'}
+                              </span>
+                              <button
+                                onClick={() => setPageNumber(prev => Math.min(prev + 1, numPages || 1))}
+                                disabled={pageNumber >= (numPages || 1)}
+                                className="p-1 hover:bg-white/10 rounded disabled:opacity-30 transition-colors"
+                              >
+                                <ChevronRight size={16} className="text-white" />
+                              </button>
+                            </div>
+
+                            <div className="w-px h-4 bg-white/10 hidden sm:block" />
+
+                            {/* Zoom Controls */}
+                            <div className="flex items-center gap-2 bg-white/5 rounded-lg p-1">
+                              <button
+                                onClick={() => zoomOut()}
+                                className="p-1 hover:bg-white/10 rounded transition-colors"
+                              >
+                                <ZoomOut size={16} className="text-white" />
+                              </button>
+                              <span className="text-xs font-mono text-gray-400 min-w-[4ch] text-center hidden sm:inline-block">
+                                {Math.round((instance.transformState.scale || 1) * 100)}%
+                              </span>
+                              <button
+                                onClick={() => zoomIn()}
+                                className="p-1 hover:bg-white/10 rounded transition-colors"
+                              >
+                                <ZoomIn size={16} className="text-white" />
+                              </button>
+                            </div>
+
+                            {/* Mobile Links Button */}
+                            <div className="lg:hidden ml-2">
+                              <button
+                                onClick={() => setShowMobileLinks(true)}
+                                className="px-3 py-1.5 bg-orange-500/10 hover:bg-orange-500/20 text-orange-400 border border-orange-500/20 rounded-lg transition-colors text-xs font-bold tracking-wider relative"
+                              >
+                                LINKS
+                                {extractedLinks.length > 0 && (
+                                  <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-orange-500 rounded-full border-2 border-black" />
+                                )}
+                              </button>
+                            </div>
+
+                          </div>
+                        </div>
+
+                        {/* Transform Component */}
+                        <div className="flex-1 w-full h-full overflow-hidden pt-[52px]"> {/* pt to offset toolbar */}
+                          <TransformComponent
+                            wrapperClass="!w-full !h-full"
+                            contentClass="!w-full !min-h-full flex items-center justify-center p-4 sm:p-8"
+                          >
+                            <Document
+                              file="/Jadamsuryateja-FullStackDevloper.pdf"
+                              onLoadSuccess={onDocumentLoadSuccess}
+                              className="flex flex-col items-center shadow-2xl shadow-orange-500/10"
+                              loading={
+                                <div className="flex flex-col items-center gap-4 mt-20">
+                                  <div className="w-8 h-8 border-2 border-orange-500 border-t-transparent rounded-full animate-spin" />
+                                  <span className="text-gray-400 text-sm font-mono animate-pulse">Initializing Visualization...</span>
+                                </div>
+                              }
+                              onLoadError={(error) => console.error("Error loading PDF:", error)}
+                            >
+                              <Page
+                                pageNumber={pageNumber}
+                                scale={1.0} // Base scale, transform handles zoom
+                                width={containerWidth ? Math.min(containerWidth - 32, 800) : undefined}
+                                renderTextLayer={false}
+                                renderAnnotationLayer={false}
+                                className="border border-white/10 rounded-sm overflow-hidden bg-white"
+                              />
+                            </Document>
+                          </TransformComponent>
+                        </div>
+                      </>
+                    )}
+                  </TransformWrapper>
                 </div>
               </div>
 
