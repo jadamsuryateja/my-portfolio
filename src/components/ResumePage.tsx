@@ -317,45 +317,47 @@ function ResumePage() {
               </motion.p>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col sm:flex-row gap-5 w-full sm:w-auto">
+              {/* View Resume Button */}
               <motion.button
                 onClick={() => setShowResume(true)}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.4 }}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="relative group px-6 py-3 rounded-full overflow-hidden bg-white/5 border border-white/10 hover:border-orange-500/50 transition-colors"
+                whileHover={{ scale: 1.02, y: -2 }}
+                whileTap={{ scale: 0.98 }}
+                className="relative group w-full sm:w-64 h-14 rounded-xl overflow-hidden bg-white/5 border border-white/10 hover:border-orange-500/50 transition-all duration-300 shadow-lg hover:shadow-orange-500/25"
               >
-                <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                <span className="relative z-10 flex items-center gap-2 text-white font-medium">
-                  <Eye size={18} className="text-orange-400 group-hover:text-white transition-colors" />
-                  <span>View Resume</span>
+                <div className="absolute inset-0 bg-gradient-to-r from-orange-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <span className="relative z-10 flex items-center justify-center gap-3 text-white font-bold tracking-wide">
+                  <Eye size={20} className="text-orange-400 group-hover:text-white transition-colors" />
+                  VIEW RESUME
                 </span>
+                {/* corner accents */}
+                <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-white/20 group-hover:border-orange-500/50 transition-colors" />
+                <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-white/20 group-hover:border-orange-500/50 transition-colors" />
               </motion.button>
 
+              {/* Download Resume Button */}
               <motion.a
                 href="/Jadamsuryateja-FullStackDevloper.pdf"
                 download="Jadam_Surya_Teja_Resume.pdf"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.5 }}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="relative group px-6 py-3 rounded-full overflow-hidden"
+                whileHover={{ scale: 1.02, y: -2 }}
+                whileTap={{ scale: 0.98 }}
+                className="relative group w-full sm:w-64 h-14 rounded-xl overflow-hidden flex items-center justify-center shadow-lg hover:shadow-orange-500/40 transition-shadow duration-300"
               >
                 {/* Animated gradient border */}
-                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-orange-500 via-yellow-400 to-orange-500 resume-gradient-rotate" />
+                <div className="absolute inset-0 bg-gradient-to-r from-orange-600 via-yellow-500 to-orange-600 resume-gradient-rotate" />
                 {/* Inner fill */}
-                <div className="absolute inset-[2px] rounded-full bg-black/90 group-hover:bg-black/70 transition-colors duration-500" />
-                {/* Shimmer sweep on hover */}
-                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-transparent via-white/15 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000 ease-in-out" />
-                {/* Glow */}
-                <div className="absolute inset-0 rounded-full shadow-[0_0_25px_rgba(249,115,22,0.3)] group-hover:shadow-[0_0_40px_rgba(249,115,22,0.5)] transition-shadow duration-500" />
+                <div className="absolute inset-[2px] rounded-[10px] bg-black group-hover:bg-zinc-900 transition-colors duration-300" />
+
                 {/* Content */}
-                <span className="relative z-10 flex items-center gap-2 sm:gap-3 text-white font-bold text-sm sm:text-base tracking-wide">
-                  <Download className="group-hover:animate-bounce" size={18} />
-                  <span className="bg-gradient-to-r from-orange-300 to-yellow-300 bg-clip-text text-transparent">Download Resume</span>
+                <span className="relative z-10 flex items-center gap-3 text-white font-bold tracking-wide group-hover:text-orange-400 transition-colors">
+                  <Download className="group-hover:animate-bounce" size={20} />
+                  DOWNLOAD RESUME
                 </span>
               </motion.a>
             </div>
