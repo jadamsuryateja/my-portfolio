@@ -317,7 +317,7 @@ function ResumePage() {
               </motion.p>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-5 w-full sm:w-auto">
+            <div className="flex flex-row gap-3 sm:gap-5 w-full sm:w-auto">
               {/* View Resume Button */}
               <motion.button
                 onClick={() => setShowResume(true)}
@@ -326,12 +326,13 @@ function ResumePage() {
                 transition={{ delay: 0.4 }}
                 whileHover={{ scale: 1.02, y: -2 }}
                 whileTap={{ scale: 0.98 }}
-                className="relative group w-full sm:w-64 h-14 rounded-xl overflow-hidden bg-white/5 border border-white/10 hover:border-orange-500/50 transition-all duration-300 shadow-lg hover:shadow-orange-500/25"
+                className="relative group flex-1 sm:flex-none sm:w-64 h-12 sm:h-14 rounded-xl overflow-hidden bg-white/5 border border-white/10 hover:border-orange-500/50 transition-all duration-300 shadow-lg hover:shadow-orange-500/25"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-orange-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                <span className="relative z-10 flex items-center justify-center gap-3 text-white font-bold tracking-wide">
-                  <Eye size={20} className="text-orange-400 group-hover:text-white transition-colors" />
-                  VIEW RESUME
+                <span className="relative z-10 flex items-center justify-center gap-2 sm:gap-3 text-white font-bold tracking-wide text-xs sm:text-base">
+                  <Eye size={18} className="text-orange-400 group-hover:text-white transition-colors sm:w-5 sm:h-5" />
+                  <span className="hidden sm:inline">VIEW RESUME</span>
+                  <span className="sm:hidden">VIEW</span>
                 </span>
                 {/* corner accents */}
                 <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-white/20 group-hover:border-orange-500/50 transition-colors" />
@@ -347,7 +348,7 @@ function ResumePage() {
                 transition={{ delay: 0.5 }}
                 whileHover={{ scale: 1.02, y: -2 }}
                 whileTap={{ scale: 0.98 }}
-                className="relative group w-full sm:w-64 h-14 rounded-xl overflow-hidden flex items-center justify-center shadow-lg hover:shadow-orange-500/40 transition-shadow duration-300"
+                className="relative group flex-1 sm:flex-none sm:w-64 h-12 sm:h-14 rounded-xl overflow-hidden flex items-center justify-center shadow-lg hover:shadow-orange-500/40 transition-shadow duration-300"
               >
                 {/* Animated gradient border */}
                 <div className="absolute inset-0 bg-gradient-to-r from-orange-600 via-yellow-500 to-orange-600 resume-gradient-rotate" />
@@ -355,9 +356,10 @@ function ResumePage() {
                 <div className="absolute inset-[2px] rounded-[10px] bg-black group-hover:bg-zinc-900 transition-colors duration-300" />
 
                 {/* Content */}
-                <span className="relative z-10 flex items-center gap-3 text-white font-bold tracking-wide group-hover:text-orange-400 transition-colors">
-                  <Download className="group-hover:animate-bounce" size={20} />
-                  DOWNLOAD RESUME
+                <span className="relative z-10 flex items-center gap-2 sm:gap-3 text-white font-bold tracking-wide group-hover:text-orange-400 transition-colors text-xs sm:text-base">
+                  <Download className="group-hover:animate-bounce sm:w-5 sm:h-5" size={18} />
+                  <span className="hidden sm:inline">DOWNLOAD RESUME</span>
+                  <span className="sm:hidden">DOWNLOAD</span>
                 </span>
               </motion.a>
             </div>
